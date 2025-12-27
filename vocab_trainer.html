@@ -1,0 +1,1348 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>單字練習：拼字／選擇題／聽力／錯題本（Part 題庫）</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#111b2e; --muted:#91a4c7; --text:#eaf0ff;
+      --btn:#1b2a48; --btn2:#243a66; --ok:#2ecc71; --bad:#ff5c5c; --warn:#ffcc66;
+      --line:#233553; --focus:#355a9b;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans TC", Arial;
+      background:linear-gradient(180deg, #0b1220, #070b14);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      padding:24px;
+    }
+    .wrap{width:min(1120px, 100%); display:grid; gap:16px}
+    .header{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+    h1{font-size:20px; margin:0}
+    .sub{color:var(--muted); font-size:13px; margin-top:6px; line-height:1.55}
+    .card{
+      background:rgba(17,27,46,.92);
+      border:1px solid rgba(35,53,83,.8);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    .grid{display:grid; gap:12px}
+    .two{grid-template-columns:1fr}
+    @media (min-width: 920px){ .two{grid-template-columns: 1.1fr .9fr;} }
+
+    .row{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+    .btn{
+      border:1px solid rgba(145,164,199,.25);
+      background:var(--btn);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:14px;
+      transition:.15s transform, .15s background;
+      user-select:none;
+    }
+    .btn:hover{background:var(--btn2)}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:#2b59ff2b; border-color:#2b59ff66}
+    .btn.danger{background:#ff3b3b22; border-color:#ff3b3b66}
+    .btn.ok{background:#2ecc7122; border-color:#2ecc7166}
+    .btn.ghost{background:transparent}
+
+    .pill{
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(145,164,199,.25);
+      color:var(--muted); font-size:12px;
+      background:rgba(10,19,36,.7);
+    }
+    .sep{height:1px; background:rgba(35,53,83,.7); margin:12px 0}
+    .small{font-size:12px; color:var(--muted); line-height:1.55}
+    .progress{
+      height:10px; border-radius:999px; background:#0a1324; border:1px solid var(--line);
+      overflow:hidden; width:min(420px, 100%);
+    }
+    .bar{height:100%; width:0%; background:linear-gradient(90deg,#2b59ff,#61d0ff)}
+    .gameTop{display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between}
+    .cn{font-size:22px; line-height:1.35; margin:0; letter-spacing:.2px}
+    .msg{font-size:14px; color:var(--muted); min-height:22px}
+    .msg.ok{color:var(--ok)}
+    .msg.bad{color:var(--bad)}
+    .msg.warn{color:var(--warn)}
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size:12px; color:var(--muted);
+      padding:2px 6px; border:1px solid rgba(145,164,199,.25);
+      border-radius:8px; background:rgba(10,19,36,.7);
+    }
+    .toggle{display:flex; align-items:center; gap:8px; user-select:none}
+    input[type="checkbox"]{transform:scale(1.1)}
+
+    .spellBox{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      padding:12px; border-radius:16px; border:1px solid var(--line);
+      background:#0a1324;
+    }
+    .spellInput{
+      flex:1; min-width:220px; height:44px;
+      border-radius:14px;
+      border:1px solid rgba(145,164,199,.25);
+      background:#111b2e;
+      color:var(--text);
+      padding:0 12px;
+      font-size:18px;
+      outline:none;
+    }
+    .spellInput:focus{border-color:var(--focus)}
+
+    .hintChips{
+      display:flex; flex-wrap:wrap; gap:8px;
+      padding:12px; border-radius:16px; border:1px solid var(--line);
+      background:#0a1324;
+      min-height:56px;
+    }
+    .chip{
+      display:inline-flex; align-items:center; justify-content:center;
+      min-width:42px; height:42px; padding:0 10px;
+      border-radius:14px;
+      border:1px solid rgba(145,164,199,.25);
+      background:#111b2e;
+      color:var(--text);
+      font-size:18px;
+      user-select:none;
+    }
+
+    .mcqWrap{ display:grid; gap:10px; margin-top:8px; }
+    .optionBtn{
+      width:100%;
+      text-align:left;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(145,164,199,.25);
+      background:#0a1324;
+      color:var(--text);
+      cursor:pointer;
+      transition:.12s transform, .12s background, .12s border-color;
+      user-select:none;
+      font-size:15px;
+    }
+    .optionBtn:hover{background:#111b2e}
+    .optionBtn:active{transform:translateY(1px)}
+    .optionBtn.correct{border-color:rgba(46,204,113,.85)}
+    .optionBtn.wrong{border-color:rgba(255,92,92,.9)}
+    .optionBtn:disabled{opacity:.82; cursor:not-allowed}
+
+    .partsGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media (min-width: 560px){
+      .partsGrid{grid-template-columns:1fr 1fr 1fr;}
+    }
+    .partCard{
+      border:1px solid rgba(145,164,199,.18);
+      border-radius:14px;
+      background:rgba(10,19,36,.55);
+      padding:10px 10px;
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+    }
+    .partCard label{cursor:pointer; line-height:1.3}
+    .partTitle{font-weight:700}
+    .partMeta{color:var(--muted); font-size:12px; margin-top:4px}
+
+    details{
+      border:1px solid rgba(145,164,199,.18);
+      border-radius:16px;
+      background:rgba(10,19,36,.55);
+      padding:10px 12px;
+    }
+    summary{
+      cursor:pointer;
+      color:var(--text);
+      font-weight:700;
+      outline:none;
+    }
+    table{width:100%; border-collapse:collapse; margin-top:10px}
+    th, td{
+      border-bottom:1px solid rgba(35,53,83,.5);
+      padding:8px 6px;
+      font-size:13px;
+      vertical-align:top;
+    }
+    th{color:var(--muted); font-weight:600; text-align:left}
+    .right{text-align:right}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;}
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 8px; border-radius:999px;
+      border:1px solid rgba(145,164,199,.25);
+      background:#0a1324;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .controlsGrid{display:grid; gap:10px; grid-template-columns:1fr;}
+    @media (min-width: 520px){ .controlsGrid{grid-template-columns: 1fr 1fr} }
+
+    select, input[type="range"], textarea{
+      background:#0a1324;
+      color:var(--text);
+      border:1px solid rgba(145,164,199,.25);
+      border-radius:12px;
+      padding:8px 10px;
+      outline:none;
+    }
+    select:focus, textarea:focus{border-color:var(--focus)}
+    textarea{width:100%; min-height:120px; resize:vertical; font-size:13px; line-height:1.5}
+    .rangeRow{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1>單字練習：拼字／選擇題／聽力／錯題本（Part 題庫）</h1>
+        <div class="sub">
+          先勾選要練習的 Part（可多選）→ 開始。<br/>
+          拼字模式：用鍵盤輸入英文，按 <span class="kbd">Enter</span> 檢查。選擇題模式：4 選 1。<br/>
+          發音使用 Web Speech API（Chrome/Edge 較穩）：第一次通常要先按一次「🔊 聽發音」才會允許出聲。
+        </div>
+      </div>
+      <div class="row">
+        <span class="pill" id="statPill">尚未開始</span>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <div style="font-weight:700; margin-bottom:6px;">① 選擇要練習的 Part（可多選）</div>
+            <div class="small">
+              你可以勾多個 Part 組合題庫。也可以勾「只練錯題」只出錯題本內的題目（會依 Part 範圍過濾）。
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn ghost" id="btnSelectAll">全選</button>
+            <button class="btn ghost" id="btnSelectNone">全不選</button>
+            <button class="btn ghost" id="btnInvert">反選</button>
+          </div>
+        </div>
+
+        <div class="partsGrid" id="partsGrid"></div>
+
+        <div class="row" style="justify-content:space-between; margin-top:10px;">
+          <span class="pill" id="selStats">已選 0 個 Part，共 0 個單字</span>
+          <label class="toggle small" title="只用錯題本中的單字出題">
+            <input type="checkbox" id="chkWrongOnly" />
+            只練錯題
+          </label>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="controlsGrid">
+          <div class="row" style="justify-content:space-between">
+            <div class="row">
+              <button class="btn primary" id="btnStart">開始（隨機順序）</button>
+              <button class="btn" id="btnResetSession">重置本輪</button>
+            </div>
+            <div class="row">
+              <span class="badge">模式</span>
+              <select id="selMode" title="拼字：鍵盤輸入｜選擇題：4選1｜混合：交錯出題">
+                <option value="spelling">拼字（鍵盤輸入）</option>
+                <option value="mcq">選擇題（4選1）</option>
+                <option value="mixed">混合（交錯）</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row" style="justify-content:space-between">
+            <div class="row">
+              <label class="toggle small" title="每題載入後自動唸英文（需瀏覽器允許）">
+                <input type="checkbox" id="chkAutoSpeak" />
+                自動唸題
+              </label>
+              <label class="toggle small" title="顯示打散字母作為提示">
+                <input type="checkbox" id="chkShowScramble" checked />
+                顯示打散字母
+              </label>
+            </div>
+
+            <div class="row">
+              <span class="badge">發音語速</span>
+              <input type="range" id="rngRate" min="0.6" max="1.2" step="0.05" value="0.95" />
+              <span class="small" id="rateText">0.95x</span>
+            </div>
+          </div>
+
+          <div class="row" style="justify-content:space-between">
+            <div class="row">
+              <span class="badge">語音</span>
+              <select id="selVoice" title="若看不到語音，刷新頁面或等 1~2 秒後再開下拉"></select>
+            </div>
+
+            <details style="width:100%">
+              <summary>（選填）自訂追加單字</summary>
+              <div class="small" style="margin-top:8px;">
+                每行一組「英文 - 中文」。開始時會和你勾選的 Part 合併出題。
+              </div>
+              <textarea id="customInput" placeholder="例：
+cell membrane - 細胞膜
+ribosome - 核糖體"></textarea>
+            </details>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <details id="wrongbookDetails">
+          <summary>錯題本（自動收集） <span class="pill" id="wrongCountPill">0</span></summary>
+
+          <div class="row" style="margin-top:10px; justify-content:space-between">
+            <div class="row">
+              <button class="btn danger" id="btnWrongClear">清空錯題本</button>
+              <button class="btn" id="btnWrongExport">匯出 CSV</button>
+            </div>
+            <div class="small">錯題本會存在瀏覽器本機（localStorage）。</div>
+          </div>
+
+          <div style="overflow:auto;">
+            <table id="wrongTable">
+              <thead>
+                <tr>
+                  <th>英文</th>
+                  <th>中文</th>
+                  <th class="right">錯誤次數</th>
+                  <th class="right">操作</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+
+      <div class="card">
+        <div class="gameTop">
+          <div class="row">
+            <span class="pill" id="idxPill">第 0/0 題</span>
+            <span class="pill" id="scorePill">分數 0</span>
+            <span class="pill" id="modePill">模式：—</span>
+          </div>
+          <div class="progress"><div class="bar" id="bar"></div></div>
+        </div>
+
+        <div class="sep"></div>
+
+        <p class="cn" id="cnText">請先在左側勾選 Part，按「開始」</p>
+
+        <div class="row" style="margin-top:10px; justify-content:space-between">
+          <div class="row">
+            <button class="btn" id="btnSpeak">🔊 聽發音</button>
+            <button class="btn ghost" id="btnSpeakSlow">🐢 慢速</button>
+          </div>
+          <div class="small" id="wordMeta"></div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div id="panel"></div>
+
+        <div class="row" style="margin-top:12px; justify-content:space-between">
+          <div class="msg" id="msg"></div>
+          <div class="row">
+            <button class="btn" id="btnHint">提示</button>
+            <button class="btn ghost" id="btnReveal">顯示答案</button>
+            <button class="btn" id="btnSkip">跳過</button>
+            <button class="btn primary" id="btnNext">下一題</button>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+        <div class="small">
+          快捷鍵：拼字模式 <span class="kbd">Enter</span> 檢查、<span class="kbd">Esc</span> 清空、<span class="kbd">Alt</span>+<span class="kbd">S</span> 發音
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PARTS = [
+      { name: "Part1", items: [
+        {en:"kingdom", zh:"界"},
+        {en:"phylum", zh:"門(單數)"},
+        {en:"class", zh:"綱"},
+        {en:"order", zh:"目"},
+        {en:"family", zh:"科"},
+        {en:"genus", zh:"屬"},
+        {en:"Amniote", zh:"羊膜動物"},
+        {en:"Cambrian explosion", zh:"寒武紀大爆發"},
+        {en:"coral reefs", zh:"珊瑚礁"},
+        {en:"krill", zh:"磷蝦"},
+      ]},
+      { name: "Part2", items: [
+        {en:"nautiluses", zh:"鸚鵡螺"},
+        {en:"salamanders", zh:"蠑螈"},
+        {en:"larve", zh:"幼蟲"},
+        {en:"nymph", zh:"若蟲"},
+        {en:"Allantois", zh:"尿囊"},
+        {en:"amniotic sac", zh:"羊膜囊"},
+        {en:"chorion", zh:"絨毛膜"},
+        {en:"Malpighian tubules", zh:"馬氏管"},
+        {en:"tube feet", zh:"管足"},
+        {en:"water vascular system", zh:"水管系統"},
+      ]},
+      { name: "Part3", items: [
+        {en:"sea cucumber", zh:"海參"},
+        {en:"sea urchin", zh:"海膽"},
+        {en:"albumen", zh:"蛋白"},
+        {en:"Class Arachnida", zh:"蛛形綱"},
+        {en:"Phylum Cnidaria", zh:"刺胞動物門"},
+        {en:"coelom", zh:"體腔"},
+        {en:"Coelomate", zh:"體腔動物"},
+        {en:"Pseudocoelomate", zh:"假體腔動物"},
+        {en:"Class Hirudinea", zh:"蛭亞綱"},
+        {en:"Order Blattodea", zh:"蜚蠊目"},
+      ]},
+      { name: "Part4", items: [
+        {en:"mandible", zh:"下頜骨"},
+        {en:"Marsupial", zh:"有袋目"},
+        {en:"Phylum Mollusca", zh:"軟體動物門"},
+        {en:"pharyngeal slits", zh:"咽裂"},
+        {en:"Phylum Porifera", zh:"多孔動物門"},
+        {en:"squid", zh:"烏賊"},
+        {en:"Squamates", zh:"有鱗目"},
+        {en:"tracheal tubes", zh:"氣管"},
+        {en:"Phylum Echinodermata", zh:"棘皮動物門"},
+        {en:"Order Carnivora", zh:"食肉目"},
+      ]},
+      { name: "Part5", items: [
+        {en:"Tunicate", zh:"海鞘"},
+        {en:"Urodela", zh:"有尾目"},
+        {en:"centipede", zh:"蜈蚣"},
+        {en:"millipede", zh:"馬陸"},
+        {en:"Apoda", zh:"無足目"},
+        {en:"phylum Arthropoda", zh:"節肢動物門"},
+        {en:"Class Cephalopoda", zh:"頭足綱"},
+        {en:"Class Gastropoda", zh:"腹足綱"},
+        {en:"Myriapoda", zh:"多足綱"},
+      ]},
+      { name: "Part6", items: [
+        {en:"Tetrapods", zh:"四足動物亞綱"},
+        {en:"platypus", zh:"鴨嘴獸"},
+        {en:"Class Actinopterygii", zh:"輻鰭魚綱"},
+        {en:"Class Sarcopterygii", zh:"肉鰭魚綱"},
+        {en:"Archaeopteryx", zh:"始祖鳥"},
+        {en:"Order Chiroptera", zh:"翼手目"},
+        {en:"phylum Chiroptera", zh:"翼手門"},
+        {en:"Order Coleoptera", zh:"鞘翅目"},
+        {en:"Order Hemiptera", zh:"半翅目"},
+        {en:"Order Hymanoptera", zh:"膜翅目"},
+      ]},
+      { name: "Part7", items: [
+        {en:"Order Isoptera", zh:"等翅下目"},
+        {en:"Order Lepidoptera", zh:"鱗翅目"},
+        {en:"Pterosaurs", zh:"翼龍類"},
+        {en:"metamorphosis", zh:"完全變態"},
+        {en:"incomplete metamorphosis", zh:"不完全變態"},
+        {en:"Order Lagomorpha", zh:"兔形目"},
+        {en:"ectotherms", zh:"外溫動物"},
+        {en:"endotherms", zh:"內溫動物"},
+        {en:"Class Amphibian", zh:"兩棲動物綱"},
+        {en:"Order Cetacean", zh:"鯨目"},
+      ]},
+      { name: "Part8", items: [
+        {en:"Crustacea", zh:"甲殼亞門"},
+        {en:"Chondrichthyan", zh:"軟骨魚綱"},
+        {en:"Osteichthyes", zh:"硬骨魚綱"},
+        {en:"Class Echinoidea", zh:"海膽綱"},
+        {en:"exoskeleton", zh:"外骨骼"},
+        {en:"Order Odonata", zh:"蜻蛉目"},
+        {en:"pelvic fins", zh:"腹鰭"},
+        {en:"Class Oligochaeta", zh:"寡毛亞綱"},
+        {en:"Class Polychaeta", zh:"多毛綱"},
+        {en:"Phylum Annelida", zh:"環節動物門"},
+      ]},
+      { name: "Part9", items: [
+        {en:"chelicera", zh:"螯肢"},
+        {en:"choanocytes", zh:"襟細胞"},
+        {en:"Crinoidea", zh:"海百合綱"},
+        {en:"Class Anthozoa", zh:"珊瑚綱"},
+        {en:"Class Asteroidea", zh:"海星綱"},
+        {en:"radial symmetry", zh:"輻射對稱"},
+        {en:"phylum Platyhelminthes", zh:"扁形動物門"},
+        {en:"planarian", zh:"渦蟲"},
+        {en:"plankton", zh:"浮游生物"},
+        {en:"Class Cubozoa", zh:"箱型水母"},
+      ]},
+      { name: "Part10", items: [
+        {en:"Class Scyphozoa", zh:"缽水母綱"},
+        {en:"tentacle", zh:"觸手"},
+        {en:"Class Cestoda", zh:"絛蟲綱"},
+        {en:"chordata", zh:"脊索動物門"},
+        {en:"Phylum Nematoda", zh:"線蟲門"},
+        {en:"Order Anura", zh:"無尾目"},
+        {en:"Monotremata", zh:"單孔目"},
+        {en:"bilateral symmetry", zh:"雙側對稱"},
+        {en:"Class Bivalvia", zh:"雙殼綱"},
+        {en:"trilobite", zh:"三葉蟲"},
+      ]},
+      { name: "Part11", items: [
+        {en:"Triploblastic animals", zh:"三胚層動物"},
+        {en:"Order Artiodactyla", zh:"偶蹄目"},
+        {en:"Order Perissodacyla", zh:"奇蹄目"},
+        {en:"Order Proboscidea", zh:"長鼻目"},
+        {en:"Cephalochordata", zh:"頭索動物亞門"},
+        {en:"Order Primates", zh:"靈長目"},
+        {en:"mesoderm", zh:"中胚層"},
+        {en:"mesohyl", zh:"中質層"},
+        {en:"Amoebocyte", zh:"阿米巴"},
+        {en:"brittle star", zh:"陽遂足"},
+      ]},
+      { name: "Part12", items: [
+        {en:"radula", zh:"齒舌"},
+        {en:"Order Rodentia", zh:"囓齒目"},
+      ]},
+    ];
+
+    const $ = (sel) => document.querySelector(sel);
+
+    function normalizeWord(w){
+      return (w || "").toLowerCase().replace(/[^a-z]/g, "");
+    }
+
+    function shuffleArray(arr){
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function scrambleLetters(word){
+      const letters = word.split("");
+      if (letters.length <= 1) return letters;
+      let tries = 0;
+      let out = letters;
+      while (tries < 10){
+        out = shuffleArray(letters);
+        if (out.join("") !== letters.join("")) break;
+        tries++;
+      }
+      return out;
+    }
+
+    function parseCustomList(text){
+      const lines = (text || "").split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const items = [];
+      const bad = [];
+
+      for (const line of lines){
+        let parts = null;
+        if (line.includes("\t")) parts = line.split("\t");
+        else if (line.includes(" - ")) parts = line.split(" - ");
+        else if (line.includes("-")){
+          const idx = line.indexOf("-");
+          parts = [line.slice(0, idx), line.slice(idx + 1)];
+        } else if (line.includes(":")){
+          const idx = line.indexOf(":");
+          parts = [line.slice(0, idx), line.slice(idx + 1)];
+        } else if (line.includes(",")){
+          const idx = line.indexOf(",");
+          parts = [line.slice(0, idx), line.slice(idx + 1)];
+        }
+
+        if (!parts || parts.length < 2){ bad.push(line); continue; }
+
+        const en = (parts[0] || "").trim();
+        const zh = parts.slice(1).join(" ").trim();
+        const norm = normalizeWord(en);
+
+        if (!en || !zh || !norm){ bad.push(line); continue; }
+        items.push({ en, zh, norm, part: "Custom" });
+      }
+      return { items, bad };
+    }
+
+    const storageWrongKey = "vocab_trainer_wrongbook_parts_v1";
+    const storageSettingsKey = "vocab_trainer_settings_parts_v1";
+
+    function loadJSON(key, fallback){
+      try{
+        const t = localStorage.getItem(key);
+        return t ? JSON.parse(t) : fallback;
+      }catch{ return fallback; }
+    }
+    function saveJSON(key, value){
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    let wrongbook = loadJSON(storageWrongKey, {});
+    let deck = [];
+    let order = [];
+    let idx = 0;
+
+    let score = 0;
+    let correct = 0;
+    let attempted = 0;
+
+    let current = null;
+    let qType = "spelling";
+    let locked = true;
+
+    let mcqOptions = [];
+    let mcqAnswered = false;
+
+    let voices = [];
+    let voiceName = "";
+
+    function setMsg(text, type=""){
+      const el = $("#msg");
+      el.textContent = text || "";
+      el.className = "msg" + (type ? " " + type : "");
+    }
+
+    function updateTop(){
+      $("#idxPill").textContent = `第 ${order.length ? Math.min(idx+1, order.length) : 0}/${order.length} 題`;
+      $("#scorePill").textContent = `分數 ${score}`;
+      $("#statPill").textContent = order.length
+        ? `答對 ${correct} / 作答 ${attempted} / 共 ${order.length}`
+        : "尚未開始";
+      $("#modePill").textContent = `模式：${qType === "spelling" ? "拼字" : "選擇題"}`;
+
+      const pct = order.length ? (idx / order.length) * 100 : 0;
+      $("#bar").style.width = `${Math.min(100, Math.max(0, pct))}%`;
+
+      const wrongCount = Object.keys(wrongbook).length;
+      $("#wrongCountPill").textContent = wrongCount;
+    }
+
+    function updateWordMeta(){
+      if (!current){
+        $("#wordMeta").textContent = "";
+        return;
+      }
+      $("#wordMeta").textContent = `題庫：${current.part}｜字母數：${current.norm.length}`;
+    }
+
+    function buildPartsUI(){
+      const grid = $("#partsGrid");
+      grid.innerHTML = "";
+
+      const settings = loadJSON(storageSettingsKey, {});
+      const savedSelected = new Set(settings.selectedParts || []);
+
+      for (const p of PARTS){
+        const id = `chk_${p.name}`;
+        const wrap = document.createElement("div");
+        wrap.className = "partCard";
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = id;
+        cb.checked = savedSelected.size ? savedSelected.has(p.name) : true;
+
+        const label = document.createElement("label");
+        label.htmlFor = id;
+
+        const title = document.createElement("div");
+        title.className = "partTitle";
+        title.textContent = p.name;
+
+        const meta = document.createElement("div");
+        meta.className = "partMeta";
+        meta.textContent = `${p.items.length} 個單字`;
+
+        label.appendChild(title);
+        label.appendChild(meta);
+
+        cb.addEventListener("change", () => {
+          updateSelectedStats();
+          saveSettings();
+        });
+
+        wrap.appendChild(cb);
+        wrap.appendChild(label);
+        grid.appendChild(wrap);
+      }
+
+      updateSelectedStats();
+    }
+
+    function getSelectedParts(){
+      const selected = [];
+      for (const p of PARTS){
+        const cb = document.getElementById(`chk_${p.name}`);
+        if (cb && cb.checked) selected.push(p.name);
+      }
+      return selected;
+    }
+
+    function updateSelectedStats(){
+      const selected = new Set(getSelectedParts());
+      let count = 0;
+      for (const p of PARTS){
+        if (selected.has(p.name)) count += p.items.length;
+      }
+      $("#selStats").textContent = `已選 ${selected.size} 個 Part，共 ${count} 個單字`;
+    }
+
+    function markWrong(item){
+      const k = item.norm;
+      if (!wrongbook[k]){
+        wrongbook[k] = { en: item.en, zh: item.zh, wrongCount: 0, lastWrongAt: "" };
+      }
+      wrongbook[k].en = item.en;
+      wrongbook[k].zh = item.zh;
+      wrongbook[k].wrongCount += 1;
+      wrongbook[k].lastWrongAt = new Date().toISOString();
+
+      saveJSON(storageWrongKey, wrongbook);
+      renderWrongTable();
+      updateTop();
+    }
+
+    function removeFromWrongbook(norm){
+      if (wrongbook[norm]){
+        delete wrongbook[norm];
+        saveJSON(storageWrongKey, wrongbook);
+        renderWrongTable();
+        updateTop();
+      }
+    }
+
+    function clearWrongbook(){
+      wrongbook = {};
+      saveJSON(storageWrongKey, wrongbook);
+      renderWrongTable();
+      updateTop();
+    }
+
+    function renderWrongTable(){
+      const tbody = $("#wrongTable tbody");
+      tbody.innerHTML = "";
+
+      const entries = Object.entries(wrongbook)
+        .map(([norm, v]) => ({ norm, ...v }))
+        .sort((a,b) => (b.wrongCount - a.wrongCount) || a.en.localeCompare(b.en));
+
+      if (entries.length === 0){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="4" class="small">目前沒有錯題 🎉</td>`;
+        tbody.appendChild(tr);
+        return;
+      }
+
+      for (const e of entries){
+        const tr = document.createElement("tr");
+
+        const tdEn = document.createElement("td");
+        tdEn.className = "mono";
+        tdEn.textContent = e.en;
+
+        const tdZh = document.createElement("td");
+        tdZh.textContent = e.zh;
+
+        const tdCnt = document.createElement("td");
+        tdCnt.className = "right";
+        tdCnt.textContent = e.wrongCount;
+
+        const tdAct = document.createElement("td");
+        tdAct.className = "right";
+        const btn = document.createElement("button");
+        btn.className = "btn ghost";
+        btn.textContent = "標記已會";
+        btn.addEventListener("click", () => removeFromWrongbook(e.norm));
+        tdAct.appendChild(btn);
+
+        tr.appendChild(tdEn);
+        tr.appendChild(tdZh);
+        tr.appendChild(tdCnt);
+        tr.appendChild(tdAct);
+        tbody.appendChild(tr);
+      }
+    }
+
+    function exportWrongbookCSV(){
+      const entries = Object.entries(wrongbook)
+        .map(([norm, v]) => ({ norm, ...v }))
+        .sort((a,b) => (b.wrongCount - a.wrongCount) || a.en.localeCompare(b.en));
+
+      const rows = [
+        ["english","chinese","wrongCount","lastWrongAt","norm"],
+        ...entries.map(e => [e.en, e.zh, String(e.wrongCount), e.lastWrongAt || "", e.norm])
+      ];
+
+      const csv = rows.map(r =>
+        r.map(x => `"${String(x).replace(/"/g,'""')}"`).join(",")
+      ).join("\n");
+
+      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "wrongbook.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function refreshVoices(){
+      voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+      const sel = $("#selVoice");
+      sel.innerHTML = "";
+
+      if (!voices || voices.length === 0){
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "（無可用語音 / 請稍等或刷新）";
+        sel.appendChild(opt);
+        return;
+      }
+
+      const sorted = voices.slice().sort((a,b) => {
+        const aEn = (a.lang || "").toLowerCase().startsWith("en");
+        const bEn = (b.lang || "").toLowerCase().startsWith("en");
+        if (aEn !== bEn) return bEn - aEn;
+        return (a.name || "").localeCompare(b.name || "");
+      });
+
+      for (const v of sorted){
+        const opt = document.createElement("option");
+        opt.value = v.name;
+        opt.textContent = `${v.name} (${v.lang})`;
+        sel.appendChild(opt);
+      }
+
+      const settings = loadJSON(storageSettingsKey, {});
+      const wanted = voiceName || settings.voiceName || "";
+      if (wanted && sorted.some(v => v.name === wanted)){
+        sel.value = wanted;
+        voiceName = wanted;
+      } else {
+        const firstEn = sorted.find(v => (v.lang || "").toLowerCase().startsWith("en"));
+        sel.value = firstEn ? firstEn.name : sorted[0].name;
+        voiceName = sel.value;
+      }
+    }
+
+    function speak(text, rateOverride=null){
+      if (!window.speechSynthesis || !text) {
+        setMsg("此瀏覽器不支援發音（speechSynthesis）。", "warn");
+        return;
+      }
+      window.speechSynthesis.cancel();
+
+      const utter = new SpeechSynthesisUtterance(text);
+      const rate = rateOverride ?? parseFloat($("#rngRate").value || "1");
+      utter.rate = Math.min(2, Math.max(0.2, rate));
+
+      const chosenName = $("#selVoice").value || voiceName;
+      const v = voices.find(x => x.name === chosenName);
+      if (v) utter.voice = v;
+
+      window.speechSynthesis.speak(utter);
+    }
+
+    function renderPanel(){
+      const panel = $("#panel");
+      panel.innerHTML = "";
+      if (!current){
+        panel.innerHTML = `<div class="small">尚未開始</div>`;
+        return;
+      }
+      if (qType === "spelling") panel.appendChild(renderSpellingPanel());
+      else panel.appendChild(renderMcqPanel());
+
+      if ($("#chkShowScramble").checked){
+        panel.appendChild(renderScrambleHint());
+      }
+    }
+
+    function renderSpellingPanel(){
+      const wrap = document.createElement("div");
+      wrap.className = "grid";
+
+      const box = document.createElement("div");
+      box.className = "spellBox";
+
+      const input = document.createElement("input");
+      input.className = "spellInput";
+      input.id = "spellInput";
+      input.placeholder = "請輸入英文拼字，Enter 檢查…";
+      input.autocomplete = "off";
+      input.autocapitalize = "off";
+      input.spellcheck = false;
+      input.disabled = locked;
+
+      const btnCheck = document.createElement("button");
+      btnCheck.className = "btn ok";
+      btnCheck.id = "btnSpellCheck";
+      btnCheck.textContent = "檢查（Enter）";
+      btnCheck.disabled = locked;
+
+      const btnClear = document.createElement("button");
+      btnClear.className = "btn ghost";
+      btnClear.id = "btnSpellClear";
+      btnClear.textContent = "清空（Esc）";
+      btnClear.disabled = locked;
+
+      btnCheck.addEventListener("click", () => checkSpelling());
+      btnClear.addEventListener("click", () => {
+        input.value = "";
+        input.focus();
+        setMsg("", "");
+      });
+
+      box.appendChild(input);
+      box.appendChild(btnCheck);
+      box.appendChild(btnClear);
+
+      const tip = document.createElement("div");
+      tip.className = "small";
+      tip.innerHTML = `提示：按 <span class="kbd">Alt</span>+<span class="kbd">S</span> 可以聽發音。`;
+
+      wrap.appendChild(box);
+      wrap.appendChild(tip);
+
+      setTimeout(() => { if (!locked) input.focus(); }, 0);
+      return wrap;
+    }
+
+    function renderScrambleHint(){
+      const letters = scrambleLetters(current.norm);
+      const hint = document.createElement("div");
+      hint.className = "hintChips";
+      hint.title = "打散字母提示";
+      for (const ch of letters){
+        const s = document.createElement("span");
+        s.className = "chip";
+        s.textContent = ch.toUpperCase();
+        hint.appendChild(s);
+      }
+      return hint;
+    }
+
+    function renderMcqPanel(){
+      const wrap = document.createElement("div");
+      wrap.className = "mcqWrap";
+      mcqAnswered = false;
+
+      mcqOptions.forEach((opt, i) => {
+        const b = document.createElement("button");
+        b.className = "optionBtn";
+        b.type = "button";
+        b.textContent = `${String.fromCharCode(65+i)}. ${opt.en}`;
+        b.disabled = locked;
+        b.addEventListener("click", () => chooseMcq(opt.norm, b));
+        wrap.appendChild(b);
+      });
+      return wrap;
+    }
+
+    function chooseQType(){
+      const mode = $("#selMode").value;
+      if (mode === "spelling") return "spelling";
+      if (mode === "mcq") return "mcq";
+      return (Math.random() < 0.6) ? "spelling" : "mcq";
+    }
+
+    function buildDeckFromSelection(){
+      const selectedParts = new Set(getSelectedParts());
+      if (selectedParts.size === 0){
+        deck = [];
+        return { ok:false, msg:"請至少勾選 1 個 Part。"};
+      }
+
+      const items = [];
+      for (const p of PARTS){
+        if (!selectedParts.has(p.name)) continue;
+        for (const it of p.items){
+          const norm = normalizeWord(it.en);
+          if (!norm) continue;
+          items.push({ en: it.en, zh: it.zh, norm, part: p.name });
+        }
+      }
+
+      const customText = ($("#customInput").value || "").trim();
+      const { items: customItems, bad } = parseCustomList(customText);
+      if (customItems.length){
+        for (const it of customItems) items.push(it);
+      }
+
+      const seen = new Set();
+      deck = items.filter(it => {
+        if (seen.has(it.norm)) return false;
+        seen.add(it.norm);
+        return true;
+      });
+
+      if (deck.length === 0){
+        return { ok:false, msg:"選到的 Part / 自訂清單沒有可用單字。"};
+      }
+
+      return { ok:true, msg: bad && bad.length ? `自訂單字有 ${bad.length} 行格式不正確已忽略。` : "" };
+    }
+
+    function buildOrderFromDeck(){
+      const wrongOnly = $("#chkWrongOnly").checked;
+      if (!wrongOnly){
+        order = shuffleArray([...Array(deck.length).keys()]);
+        return;
+      }
+
+      const normToIndex = new Map(deck.map((it, i) => [it.norm, i]));
+      const indices = Object.keys(wrongbook)
+        .map(norm => normToIndex.get(norm))
+        .filter(i => typeof i === "number");
+
+      order = indices.length ? shuffleArray(indices) : shuffleArray([...Array(deck.length).keys()]);
+    }
+
+    function prepareMcqOptions(){
+      const pool = deck.filter(it => it.norm !== current.norm);
+      const picks = shuffleArray(pool).slice(0, 3);
+      const opts = [{en: current.en, norm: current.norm}, ...picks.map(p => ({en: p.en, norm: p.norm}))];
+      mcqOptions = shuffleArray(opts);
+    }
+
+    function loadQuestion(){
+      if (!deck.length || idx >= order.length){
+        locked = true;
+        $("#cnText").textContent = "🎉 已完成！你可以重新開始或換 Part 範圍。";
+        $("#panel").innerHTML = `<div class="small">完成</div>`;
+        $("#bar").style.width = "100%";
+        setMsg(`完成！答對 ${correct} / 作答 ${attempted} / 分數 ${score}`, "ok");
+        updateTop();
+        updateWordMeta();
+        return;
+      }
+
+      current = deck[order[idx]];
+      qType = chooseQType();
+      locked = false;
+      mcqAnswered = false;
+
+      $("#cnText").textContent = current.zh;
+      setMsg("", "");
+      updateWordMeta();
+
+      if (qType === "mcq") prepareMcqOptions();
+      renderPanel();
+      updateTop();
+
+      if ($("#chkAutoSpeak").checked){
+        speak(current.en);
+      } else if (qType === "spelling"){
+        setTimeout(() => {
+          const inp = $("#spellInput");
+          if (inp && !locked) inp.focus();
+        }, 0);
+      }
+    }
+
+    function startGame(){
+      const result = buildDeckFromSelection();
+      if (!result.ok){
+        setMsg(result.msg, "bad");
+        return;
+      }
+
+      idx = 0;
+      score = 0;
+      correct = 0;
+      attempted = 0;
+
+      buildOrderFromDeck();
+      saveSettings();
+
+      if (result.msg) setMsg(`已開始。${result.msg}`, "warn");
+      else setMsg(`已開始！題庫共 ${deck.length} 個單字。`, "ok");
+
+      loadQuestion();
+    }
+
+    function resetSession(){
+      idx = 0;
+      score = 0;
+      correct = 0;
+      attempted = 0;
+      setMsg("已重置本輪（仍使用目前 Part 範圍）。", "warn");
+      buildOrderFromDeck();
+      loadQuestion();
+    }
+
+    function next(){
+      if (!deck.length) return;
+      idx++;
+      loadQuestion();
+    }
+
+    function skip(){
+      if (!current || locked) return;
+      attempted++;
+      score = Math.max(0, score - 1);
+      setMsg(`⏭️ 已跳過（分數 -1）。答案：${current.en}`, "warn");
+      locked = true;
+      updateTop();
+      lockCurrentUI();
+    }
+
+    function reveal(){
+      if (!current) return;
+      locked = true;
+      updateTop();
+      lockCurrentUI();
+      setMsg(`答案：${current.en}`, "warn");
+      const inp = $("#spellInput");
+      if (inp) inp.value = current.en;
+      if (qType === "mcq"){
+        const buttons = Array.from($("#panel").querySelectorAll(".optionBtn"));
+        for (const b of buttons){
+          const txt = b.textContent.split(". ").slice(1).join(". ");
+          if (normalizeWord(txt) === current.norm) b.classList.add("correct");
+        }
+      }
+    }
+
+    function hint(){
+      if (!current || locked) return;
+      score = Math.max(0, score - 1);
+
+      if (qType === "spelling"){
+        const inp = $("#spellInput");
+        if (!inp) return;
+        const typedNorm = normalizeWord(inp.value);
+        const nextChar = current.norm[typedNorm.length] || current.norm[0] || "";
+        if (typedNorm.length === 0){
+          inp.value = nextChar;
+        } else if (nextChar){
+          inp.value = inp.value + nextChar;
+        }
+        inp.focus();
+        setMsg("已提示一點點（分數 -1）", "warn");
+      } else {
+        const buttons = Array.from($("#panel").querySelectorAll(".optionBtn"));
+        const candidates = buttons.filter(b => {
+          const txt = b.textContent.split(". ").slice(1).join(". ");
+          return normalizeWord(txt) !== current.norm && !b.disabled;
+        });
+        if (candidates.length){
+          const kill = candidates[Math.floor(Math.random() * candidates.length)];
+          kill.disabled = true;
+          setMsg("已幫你排除一個錯誤選項（分數 -1）", "warn");
+        } else {
+          setMsg("沒有可排除的選項了（分數 -1）", "warn");
+        }
+      }
+
+      updateTop();
+    }
+
+    function lockCurrentUI(){
+      const inp = $("#spellInput");
+      const c1 = $("#btnSpellCheck");
+      const c2 = $("#btnSpellClear");
+      if (inp) inp.disabled = true;
+      if (c1) c1.disabled = true;
+      if (c2) c2.disabled = true;
+
+      const buttons = Array.from($("#panel").querySelectorAll(".optionBtn"));
+      for (const b of buttons) b.disabled = true;
+    }
+
+    function checkSpelling(){
+      if (!current || locked) return;
+      const inp = $("#spellInput");
+      if (!inp) return;
+
+      const raw = inp.value.trim();
+      const typed = normalizeWord(raw);
+
+      if (!typed){
+        setMsg("你還沒輸入喔～", "warn");
+        inp.focus();
+        return;
+      }
+
+      attempted++;
+      const ok = typed === current.norm;
+
+      if (ok){
+        correct++;
+        score += 3;
+        setMsg(`✅ 正確！+3 分（答案：${current.en}）`, "ok");
+      } else {
+        score = Math.max(0, score - 1);
+        setMsg(`❌ 不對（分數 -1）。正確答案：${current.en}`, "bad");
+        markWrong(current);
+      }
+
+      locked = true;
+      updateTop();
+      lockCurrentUI();
+    }
+
+    function chooseMcq(selectedNorm, btnEl){
+      if (!current || locked || mcqAnswered) return;
+
+      attempted++;
+      mcqAnswered = true;
+
+      const ok = selectedNorm === current.norm;
+
+      const buttons = Array.from($("#panel").querySelectorAll(".optionBtn"));
+      for (const b of buttons) b.disabled = true;
+
+      for (const b of buttons){
+        const txt = b.textContent.split(". ").slice(1).join(". ");
+        if (normalizeWord(txt) === current.norm) b.classList.add("correct");
+      }
+
+      if (ok){
+        correct++;
+        score += 1;
+        btnEl.classList.add("correct");
+        setMsg(`✅ 正確！+1 分（答案：${current.en}）`, "ok");
+      } else {
+        score = Math.max(0, score - 1);
+        btnEl.classList.add("wrong");
+        setMsg(`❌ 不對（分數 -1）。正確答案：${current.en}`, "bad");
+        markWrong(current);
+      }
+
+      locked = true;
+      updateTop();
+    }
+
+    function saveSettings(){
+      const s = {
+        mode: $("#selMode").value,
+        wrongOnly: $("#chkWrongOnly").checked,
+        autoSpeak: $("#chkAutoSpeak").checked,
+        showScramble: $("#chkShowScramble").checked,
+        rate: parseFloat($("#rngRate").value || "1"),
+        voiceName: $("#selVoice").value || voiceName,
+        selectedParts: getSelectedParts()
+      };
+      saveJSON(storageSettingsKey, s);
+    }
+
+    function loadSettings(){
+      const s = loadJSON(storageSettingsKey, null);
+      if (!s) return;
+
+      if (s.mode) $("#selMode").value = s.mode;
+      $("#chkWrongOnly").checked = !!s.wrongOnly;
+      $("#chkAutoSpeak").checked = !!s.autoSpeak;
+      $("#chkShowScramble").checked = (s.showScramble !== false);
+      if (typeof s.rate === "number") $("#rngRate").value = String(s.rate);
+      if (s.voiceName) voiceName = s.voiceName;
+
+      $("#rateText").textContent = `${parseFloat($("#rngRate").value).toFixed(2)}x`;
+    }
+
+    $("#btnStart").addEventListener("click", startGame);
+    $("#btnResetSession").addEventListener("click", resetSession);
+
+    $("#btnHint").addEventListener("click", hint);
+    $("#btnReveal").addEventListener("click", reveal);
+    $("#btnSkip").addEventListener("click", skip);
+    $("#btnNext").addEventListener("click", next);
+
+    $("#btnSpeak").addEventListener("click", () => { if (current) speak(current.en); });
+    $("#btnSpeakSlow").addEventListener("click", () => { if (current) speak(current.en, 0.75); });
+
+    $("#chkWrongOnly").addEventListener("change", () => { saveSettings(); });
+    $("#selMode").addEventListener("change", () => { saveSettings(); });
+    $("#chkAutoSpeak").addEventListener("change", () => { saveSettings(); });
+    $("#chkShowScramble").addEventListener("change", () => { saveSettings(); if (current) renderPanel(); });
+    $("#rngRate").addEventListener("input", () => {
+      $("#rateText").textContent = `${parseFloat($("#rngRate").value).toFixed(2)}x`;
+      saveSettings();
+    });
+    $("#selVoice").addEventListener("change", () => { voiceName = $("#selVoice").value; saveSettings(); });
+
+    $("#btnSelectAll").addEventListener("click", () => {
+      for (const p of PARTS){
+        const cb = document.getElementById(`chk_${p.name}`);
+        if (cb) cb.checked = true;
+      }
+      updateSelectedStats();
+      saveSettings();
+    });
+    $("#btnSelectNone").addEventListener("click", () => {
+      for (const p of PARTS){
+        const cb = document.getElementById(`chk_${p.name}`);
+        if (cb) cb.checked = false;
+      }
+      updateSelectedStats();
+      saveSettings();
+    });
+    $("#btnInvert").addEventListener("click", () => {
+      for (const p of PARTS){
+        const cb = document.getElementById(`chk_${p.name}`);
+        if (cb) cb.checked = !cb.checked;
+      }
+      updateSelectedStats();
+      saveSettings();
+    });
+
+    $("#btnWrongClear").addEventListener("click", () => {
+      if (confirm("確定要清空錯題本？")) {
+        clearWrongbook();
+        setMsg("已清空錯題本。", "warn");
+      }
+    });
+    $("#btnWrongExport").addEventListener("click", exportWrongbookCSV);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.altKey && (e.key === "s" || e.key === "S")){
+        e.preventDefault();
+        if (current) speak(current.en);
+        return;
+      }
+      if (qType !== "spelling") return;
+      const inp = $("#spellInput");
+      if (!inp) return;
+
+      if (e.key === "Enter"){
+        e.preventDefault();
+        checkSpelling();
+      } else if (e.key === "Escape"){
+        e.preventDefault();
+        if (!locked) { inp.value = ""; inp.focus(); setMsg("", ""); }
+      }
+    });
+
+    function init(){
+      loadSettings();
+      renderWrongTable();
+      updateTop();
+      buildPartsUI();
+
+      if (window.speechSynthesis){
+        refreshVoices();
+        window.speechSynthesis.onvoiceschanged = () => refreshVoices();
+      } else {
+        $("#selVoice").innerHTML = `<option value="">（此瀏覽器不支援發音）</option>`;
+      }
+
+      $("#rateText").textContent = `${parseFloat($("#rngRate").value).toFixed(2)}x`;
+    }
+
+    init();
+  </script>
+</body>
+</html>
